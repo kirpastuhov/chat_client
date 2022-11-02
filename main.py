@@ -1,6 +1,7 @@
 import asyncio
 import datetime
 
+import aiofiles
 from loguru import logger
 
 
@@ -9,13 +10,13 @@ async def tcp_echo_client(message):
     port = 5000
     reader, writer = await asyncio.open_connection(host, port)
 
-    with open("msg_log.txt", "a") as out_file:
+    async with aiofiles.open('msg_log.txt', mode='a') as log_file:
         while not reader.at_eof():
             data = await reader.readline()
             message = format_msg(data.decode())
 
             print(message)
-            out_file.write(message)
+            await log_file.write(message)
 
     logger.info("Close the connection")
     writer.close()
