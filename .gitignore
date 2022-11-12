@@ -152,3 +152,4 @@ cython_debug/
 #.idea/
 .vscode/settings.json
 msg_log.txt
+minechat.history
