@@ -1,11 +1,10 @@
-import asyncio
 import json
+from asyncio import StreamReader, StreamWriter
 
 from loguru import logger
 
 
-async def authorise(token: str) -> tuple[asyncio.StreamWriter, dict|None]:
-    reader, writer = await asyncio.open_connection("minechat.dvmn.org", 5050)
+async def authorise(reader: StreamReader, writer: StreamWriter, token: str):
     data = await reader.readline()
     logger.debug(data.decode())
 
@@ -14,4 +13,7 @@ async def authorise(token: str) -> tuple[asyncio.StreamWriter, dict|None]:
 
     data = await reader.readline()
     logger.debug(data.decode())
-    return writer, json.loads(data.decode())
+
+    if json.loads(data.decode()) is None:
+        logger.error("Incorrect token. Authorization failed.")
+        quit()

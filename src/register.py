@@ -4,8 +4,8 @@ import json
 from loguru import logger
 
 
-async def register(host: str, username: str) -> dict[str, str]:
-    reader, writer = await asyncio.open_connection(host, 5050)
+async def register(host: str, port: int, username: str) -> dict[str, str]:
+    reader, writer = await asyncio.open_connection(host, port)
 
     data = await reader.readline()
     logger.debug(data.decode())
