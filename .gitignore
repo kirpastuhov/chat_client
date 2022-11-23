@@ -153,3 +153,4 @@ cython_debug/
 .vscode/settings.json
 msg_log.txt
 minechat.history
+.vim/coc-settings.json
