@@ -6,14 +6,14 @@ from loguru import logger
 
 
 @asynccontextmanager
-async def chat_connector(host: str, port:int):
+async def open_connection(host: str, port:int):
     writer = None
     try:
         reader, writer = await asyncio.open_connection(host, port)
         yield reader, writer
     except (OSError, socket.gaierror) as err:
         logger.error(f"Connection error: {err}")
-        quit()
     finally:
         if writer:
-            writer.close()
+            await writer.wait_closed()
+

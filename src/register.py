@@ -1,12 +1,10 @@
-import asyncio
 import json
+from asyncio import StreamReader, StreamWriter
 
 from loguru import logger
 
 
-async def register(host: str, port: int, username: str) -> dict[str, str]:
-    reader, writer = await asyncio.open_connection(host, port)
-
+async def register(reader: StreamReader, writer: StreamWriter, username: str) -> dict[str, str]:
     data = await reader.readline()
     logger.debug(data.decode())
 
@@ -23,6 +21,6 @@ async def register(host: str, port: int, username: str) -> dict[str, str]:
 
     data = await reader.readline()
     logger.debug(data.decode())
-
     writer.close()
+
     return json.loads(data.decode())

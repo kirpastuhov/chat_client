@@ -4,7 +4,7 @@ from asyncio import StreamReader, StreamWriter
 from loguru import logger
 
 
-async def authorise(reader: StreamReader, writer: StreamWriter, token: str):
+async def authorise(reader: StreamReader, writer: StreamWriter, token: str) -> bool:
     data = await reader.readline()
     logger.debug(data.decode())
 
@@ -14,6 +14,8 @@ async def authorise(reader: StreamReader, writer: StreamWriter, token: str):
     data = await reader.readline()
     logger.debug(data.decode())
 
-    if json.loads(data.decode()) is None:
+    if not json.loads(data.decode()):
         logger.error("Incorrect token. Authorization failed.")
-        quit()
+        return False
+
+    return True

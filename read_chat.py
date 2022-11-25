@@ -1,7 +1,9 @@
 import argparse
 import asyncio
 
-from src.chat_connector import chat_connector
+from loguru import logger
+
+from src.chat_connector import open_connection
 from src.listen import listen
 
 
@@ -12,9 +14,13 @@ async def main():
     parser.add_argument("--history", dest="history_path", type=str, default="minechat.history", help="File for message history.")
     args = parser.parse_args()
 
-    async with chat_connector(args.host, args.port) as conn:
-        reader, _ = conn
-        await listen(reader, args.history_path)
+    try:
+        async with open_connection(args.host, args.port) as conn:
+            reader, _ = conn
+            await listen(reader, args.history_path)
+    except RuntimeError:
+        logger.error("Exiting...")
+        quit()
 
 
 

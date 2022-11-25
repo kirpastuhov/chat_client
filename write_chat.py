@@ -4,7 +4,7 @@ import asyncio
 from loguru import logger
 
 from src.authorise import authorise
-from src.chat_connector import chat_connector
+from src.chat_connector import open_connection
 from src.register import register
 from src.write import submit_message
 
@@ -20,16 +20,32 @@ async def main():
     args = parser.parse_args()
 
     if not args.token:
-        response = await register(args.host, args.port, args.username)
-        args.token = response["account_hash"]
+        try:
+            async with open_connection(args.host, args.port) as conn:
+                reader, writer = conn
+                response = await register(reader, writer, args.username)
+                args.token = response["account_hash"]
+        except RuntimeError:
+            logger.error("Exiting...")
+            quit()
 
-    async with chat_connector(args.host, args.port) as conn:
-        reader, writer = conn
-        await authorise(reader, writer, args.token)
-        logger.info("Authorization was successful")
+    try:
+        async with open_connection(args.host, args.port) as conn:
+            reader, writer = conn
 
-        await submit_message(args.message, writer)
-        logger.info("Message was sent")
+            if not await authorise(reader, writer, args.token):
+                writer.close()
+                quit()
+
+            logger.info("Authorization was successful")
+
+            await submit_message(args.message, writer)
+            writer.close()
+            logger.info("Message was sent")
+
+    except RuntimeError:
+        logger.error("Exiting...")
+        quit()
 
 
 if __name__ == "__main__":
