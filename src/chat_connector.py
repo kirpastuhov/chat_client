@@ -6,7 +6,7 @@ from loguru import logger
 
 
 @asynccontextmanager
-async def open_connection(host: str, port:int):
+async def open_connection(host: str, port: int):
     writer = None
     try:
         reader, writer = await asyncio.open_connection(host, port)
@@ -15,5 +15,5 @@ async def open_connection(host: str, port:int):
         logger.error(f"Connection error: {err}")
     finally:
         if writer:
+            writer.close()
             await writer.wait_closed()
-

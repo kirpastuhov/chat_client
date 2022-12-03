@@ -8,19 +8,16 @@ async def register(reader: StreamReader, writer: StreamWriter, username: str) ->
     data = await reader.readline()
     logger.debug(data.decode())
 
-
     writer.write("\n".encode())
     await writer.drain()
 
     data = await reader.readline()
     logger.debug(data.decode())
 
-
     writer.write(f"{username}\n".encode())
     await writer.drain()
 
     data = await reader.readline()
     logger.debug(data.decode())
-    writer.close()
 
     return json.loads(data.decode())

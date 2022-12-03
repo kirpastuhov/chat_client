@@ -34,13 +34,11 @@ async def main():
             reader, writer = conn
 
             if not await authorise(reader, writer, args.token):
-                writer.close()
                 quit()
 
             logger.info("Authorization was successful")
 
             await submit_message(args.message, writer)
-            writer.close()
             logger.info("Message was sent")
 
     except RuntimeError:
